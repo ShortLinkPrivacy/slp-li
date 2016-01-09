@@ -7,6 +7,7 @@ NPM=$(shell which npm)
 help:
 	@echo "Available targets:"
 	@echo "install     - install all modules"
+	@echo "build       - compile all files"
 	@echo "clean       - remove all installed modules"
 	@echo "start       - run application in development mode"
 	@echo "deploy      - run application in production mode"
@@ -14,6 +15,9 @@ help:
 
 install:
 	$(NPM) install
+
+build:
+	coffee -c ./
 
 clean:
 	rm -rf node_modules/
