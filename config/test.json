@@ -1,0 +1,9 @@
+{
+  "log4js": {
+    "appenders": []
+  },
+  "mongo": {
+    "url": "mongodb://localhost:27017/pgp_test"
+  }
+}
+

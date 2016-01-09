@@ -1,0 +1,22 @@
+{
+  "name": "pgp-server",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "body-parser": "^1.14.2",
+    "config": "^1.17.1",
+    "express": "^4.13.3",
+    "kerberos": "0.0.17",
+    "log4js": "^0.6.29",
+    "mongodb": "2.0.*",
+    "mongoskin": "^2.0.3"
+  },
+  "devDependencies": {
+    "mocha": "*",
+    "superagent": "*",
+    "supertest": "*"
+  }
+}

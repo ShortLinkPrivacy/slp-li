@@ -1,0 +1,13 @@
+{
+  "name": "PGP key-value store",
+  "log4js": {
+    "appenders": [ { "type": "console" } ],
+    "level": "TRACE"
+  },
+  "mongo": {
+    "url": "mongodb://localhost:27017/pgp"
+  },
+  "express": {
+    "port": 5000
+  }
+}
