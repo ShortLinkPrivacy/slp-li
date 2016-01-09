@@ -11,13 +11,14 @@ help:
 	@echo "clean       - remove all installed modules"
 	@echo "start       - run application in development mode"
 	@echo "deploy      - run application in production mode"
+	@echo "restart     - restart application in production mode"
 	@echo "test        - run all test"
 
 install:
 	$(NPM) install
 
 build:
-	coffee -c ./
+	$(COFFEE) -c ./ t/
 
 clean:
 	rm -rf node_modules/
@@ -28,7 +29,11 @@ start:
 
 deploy:
 	$(COFFEE) -c ./
-	NODE_ENV=production $(NODE) $(APP)
+	NODE_ENV=production forever -l log/forever_error.log $(APP) &
+
+restart:
+	$(COFFEE) -c ./
+	forever restart $(APP)
 
 test:
 	$(COFFEE) -c t
