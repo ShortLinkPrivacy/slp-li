@@ -9,6 +9,7 @@
     "body-parser": "^1.14.2",
     "config": "^1.17.1",
     "express": "^4.13.3",
+    "jade": "^1.11.0",
     "kerberos": "0.0.17",
     "log4js": "^0.6.29",
     "mongodb": "2.0.*"
