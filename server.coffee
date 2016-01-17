@@ -1,8 +1,12 @@
 express = require 'express'
 bodyParser = require 'body-parser'
-mongo = require 'mongoskin'
+mongodb = require 'mongodb'
+MongoClient = mongodb.MongoClient
+ObjectId = mongodb.ObjectId
 config = require 'config'
 log4js = require 'log4js'
+
+url = config.get 'mongo.url'
 
 # -----------------------------------------
 # Setup
@@ -15,17 +19,8 @@ log4js.configure {
 logger = log4js.getLogger 'app'
 logger.setLevel(config.get('log4js.level'))
 
-# DB
-db = mongo.db(config.get 'mongo.url')
-db.bind('items')
-ObjectId = mongo.ObjectID
-
 # Web application
 app = express()
-
-# Required, so tests can have access to the db
-app.db = db
-app.ObjectId = ObjectId
 
 # -----------------------------------------
 # Express middleware
@@ -58,7 +53,7 @@ app.get '/x/:id', (req, res)->
         return
 
     # Find the id in items
-    db.items.findOne { _id: objId }, (err, result)->
+    app.items.findOne { _id: objId }, (err, result)->
         if err?
             logger.error "findOne(#{id}) returned error: #{err}"
             res.sendStatus 500
@@ -88,7 +83,7 @@ app.post '/x', (req, res)->
     # idiots don't begin using this service as a free anonymous
     # key-value items
 
-    db.items.insertOne payload, (err, result)->
+    app.items.insertOne payload, (err, result)->
         if err?
             logger.error "insertOne (#{payload}) resulted in error: #{err}"
             res.sendStatus = 500
@@ -98,9 +93,18 @@ app.post '/x', (req, res)->
 
 
 # Bootstrap
+
+app.bootstrap = (code)->
+    MongoClient.connect url, (err, _db)->
+        app.ObjectId = ObjectId
+        app.db = _db
+        app.items = _db.collection('items')
+        code()
+
 if require.main == module
-    port = config.get('express.port')
-    app.listen port, ->
-        logger.info "The server is running on port #{port}"
+    app.bootstrap ->
+        port = config.get('express.port')
+        app.listen port, ->
+            logger.info "The server is running on port #{port}"
 
 module.exports = app

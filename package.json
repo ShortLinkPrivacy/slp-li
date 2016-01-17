@@ -11,8 +11,7 @@
     "express": "^4.13.3",
     "kerberos": "0.0.17",
     "log4js": "^0.6.29",
-    "mongodb": "2.0.*",
-    "mongoskin": "^2.0.3"
+    "mongodb": "2.0.*"
   },
   "devDependencies": {
     "mocha": "*",
