@@ -96,6 +96,10 @@ app.post '/x', (req, res)->
 
 app.bootstrap = (code)->
     MongoClient.connect url, (err, _db)->
+        if err
+            logger.error "Error: #{err}"
+            return
+
         app.ObjectId = ObjectId
         app.db = _db
         app.items = _db.collection('items')
