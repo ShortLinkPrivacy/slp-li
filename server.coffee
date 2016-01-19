@@ -19,8 +19,6 @@ logger.setLevel(config.get('log4js.level'))
 # Web app config
 #=================================================================
 app = express()
-app.set('views', './views')
-app.set('view engine', 'jade')
 
 # Middleware
 app.use(bodyParser.json())
@@ -41,6 +39,41 @@ bootstrap = app.bootstrap = (code)->
         app.items = _db.collection('items')
         code()
 
+# Template
+#=================================================================
+view = (data)->
+    """
+    <!DOCTYPE html>
+    <html lang="en">
+      <head>
+        <title>Short Link Privacy Message</title>
+        <style type="text/css">
+            body { font-family: sans-serif; background-color: #fff; }
+            #content { width: 500px; margin-left: auto; margin-right: auto; }
+            .slp {} 
+            .slp a { color: #00f; font-weight: bold; }
+            pre { background-color: #eee; padding: 10px; border: 1px dotted #aaa; }
+        </style>
+      </head>
+      <body>
+        <div id="content">
+            <h1>PGP Encrypted Message</h1>
+            <p class="slp">
+                Please install the <a href="">Short Link Privacy</a> browser
+                plugin to have this message seamlessly decrypt in your browser.
+            </p>
+            <pre>
+    """ + data.armor + """
+            </pre>
+            <small class="footer">
+                <a href="https://en.wikipedia.org/wiki/Pretty_Good_Privacy">What is PGP?</a> |
+                <a href="">What is SLP?</a> 
+            </small>
+        </div>
+      </body>
+    </html>
+    """
+
 # Routes
 #=================================================================
 app.get '/x/:id', (req, res)->
@@ -54,21 +87,18 @@ app.get '/x/:id', (req, res)->
     catch e
         return res.sendStatus 404
 
-    # Not json? Return a text with a link to install the extension
-    # TODO: Send a full HTML with links here
-    if req.get('Content-Type') isnt "application/json"
-        res.statusCode = 200
-        res.send "Please download and install this Chrome plugin to read this message"
-        return
-
     # Find the id in items
     app.items.findOne { _id: objId }, (err, result)->
         if err?
             logger.error "findOne(#{id}) returned error: #{err}"
             res.sendStatus 500
         else if result?
-            res.statusCode = 200
-            res.json result
+            if req.get('Content-Type') is "application/json"
+                res.statusCode = 200
+                res.json result
+            else
+                res.statusCode = 200
+                res.send view(result)
         else
             res.sendStatus 404
 
