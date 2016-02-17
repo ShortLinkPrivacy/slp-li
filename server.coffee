@@ -7,7 +7,7 @@ log4js = require 'log4js'
 # Configuration options
 #=================================================================
 url = config.get 'mongo.url'
-port = config.get('express.port')
+port = config.get 'express.port'
 
 # Logger config
 #=================================================================
@@ -63,7 +63,7 @@ view = (data)->
                 plugin to have this message seamlessly decrypt in your browser.
             </p>
             <pre>
-    """ + data.armor + """
+    """ + data.body + """
             </pre>
             <small class="footer">
                 <a href="https://en.wikipedia.org/wiki/Pretty_Good_Privacy">What is PGP?</a> |
@@ -115,8 +115,8 @@ app.post '/x', (req, res)->
     if not payload?
         return err400 "Payload missing"
 
-    unless payload.armor?
-        return err400 "armor not defined"
+    unless payload.body?
+        return err400 "body not defined"
 
     # TODO: find a way to limit POSTs to internal data only, so
     # idiots don't begin using this service as a free anonymous

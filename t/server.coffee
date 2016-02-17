@@ -38,12 +38,12 @@ add_item = ->
                 p.expect(400, done)
 
             #----------------------------------------------
-            it 'returns 400 if there is no armor', (done)->
+            it 'returns 400 if there is no body', (done)->
                 p.send({ blah: 1 }).expect(400, done)
 
             #----------------------------------------------
-            it 'returns 201 if there is armor', (done)->
-                p.send({ armor: "something" })
+            it 'returns 201 if there is body', (done)->
+                p.send({ body: "something" })
                     .end (err, res)->
                         assert.equal(res.status, 201, "201 OK")
                         assert.ok(res.body.id, "id present")
@@ -59,7 +59,7 @@ retrieve_items = ->
         beforeEach (done)->
             p = r.post("/x")
                 .set('Content-Type', 'application/json')
-                .send({ armor: "something" })
+                .send({ body: "something", expiration: new Date() })
                 .end (err, res)->
                     result = res.body
                     done()
@@ -79,7 +79,8 @@ retrieve_items = ->
                 r.get("/x/#{result.id}")
                     .set('Content-Type', 'application/json')
                     .end (err, res)->
-                        assert.equal(res.body.armor, "something")
+                        assert.equal(res.body.body, "something")
+                        assert.ok(res.body.expiration, "expiration")
                         done()
 
             it "save proper data in the DB", (done)->
@@ -87,7 +88,7 @@ retrieve_items = ->
                     .set('Content-Type', 'application/json')
                     .end (err, res)->
                         app.items.findOne { _id: app.ObjectId(result.id) }, (e, r)->
-                            assert.equal(r.armor, "something")
+                            assert.equal(r.body, "something")
                             done()
 
 #########################################################
