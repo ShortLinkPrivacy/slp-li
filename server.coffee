@@ -88,11 +88,18 @@ app.get '/x/:id', (req, res)->
         return res.sendStatus 404
 
     # Find the id in items
-    app.items.findOne { _id: objId }, (err, result)->
+    app.items.findOne { _id: objId,  }, (err, result)->
         if err?
             logger.error "findOne(#{id}) returned error: #{err}"
             res.sendStatus 500
         else if result?
+            if result.expiration
+                expiration = new Date(result.expiration)
+                if expiration < new Date()
+                    res.statusCode 410
+                    res.send "Expired"
+                    return
+
             if req.get('Content-Type') is "application/json"
                 res.statusCode = 200
                 res.json result
