@@ -1,12 +1,29 @@
 request = require 'supertest'
 app     = require '../server.js'
 assert  = require 'assert'
+moment  = require 'moment'
 
 r = request(app)
 
 #########################################################
+# Util
 
-missing_route = ->
+post = (payload, callback)->
+    r.post("/x")
+        .set('Content-Type', 'application/json')
+        .send(payload)
+        .end (err, res)->
+            callback(err, res)
+
+get = (path, callback)->
+    r.get(path)
+        .set('Content-Type', 'application/json')
+        .end (err, res)->
+            callback(err, res)
+
+#########################################################
+
+missingRoute = ->
     describe 'Missing route', ->
 
         paths = [
@@ -23,73 +40,100 @@ missing_route = ->
 
 #########################################################
 
-add_item = ->
-    describe 'Add item', ->
-        p = null
+addItem = ->
+    describe 'Put an item', ->
+        #----------------------------------------------
+        it 'returns 400 if content is missing', (done)->
+            post {}, (err, res)->
+                assert.equal(res.status, 400)
+                done()
 
-        beforeEach (done)->
-            p = r.post("/x").set('Content-Type', 'application/json')
-            done()
+        #----------------------------------------------
+        it 'returns 400 if there is no body', (done)->
+            post { blah: 1 }, (err, res)->
+                assert.equal(res.status, 400)
+                done()
 
-        describe 'POST /x', ->
-
-            #----------------------------------------------
-            it 'returns 400 if content is missing', (done)->
-                p.expect(400, done)
-
-            #----------------------------------------------
-            it 'returns 400 if there is no body', (done)->
-                p.send({ blah: 1 }).expect(400, done)
-
-            #----------------------------------------------
-            it 'returns 201 if there is body', (done)->
-                p.send({ body: "something" })
-                    .end (err, res)->
-                        assert.equal(res.status, 201, "201 OK")
-                        assert.ok(res.body.id, "id present")
-                        done()
+        #----------------------------------------------
+        it 'returns 201 if there is body', (done)->
+            post { body: "something" }, (err, res)->
+                assert.equal(res.status, 201, "201 OK")
+                assert.ok(res.body.id, "id present")
+                done()
 
 #########################################################
 
-retrieve_items = ->
-    describe 'Retrieve items', ->
-        p = null
-        result = null
+retrieveItems = ->
+    describe 'Get an item', ->
 
-        beforeEach (done)->
-            p = r.post("/x")
-                .set('Content-Type', 'application/json')
-                .send({ body: "something", expiration: new Date() })
-                .end (err, res)->
-                    result = res.body
+        id = null
+
+        before (done)->
+            post { body: "something" }, (err, res)->
+                id = res.body.id
+                done()
+
+        it "returns 404 if id not found", (done)->
+            get "/x/562075c6850ddb4a24c9b005", (err, res)->
+                assert.equal res.status, 404
+                done()
+
+        it "returns 200 if id is found", (done)->
+            get "/x/#{id}", (err, res)->
+                assert.equal res.status, 200
+                done()
+
+        it "returns the json stored", (done)->
+            get "/x/#{id}", (err, res)->
+                assert.equal res.body.body, "something"
+                done()
+
+        it "saves the correct data in the database", (done)->
+            get "/x/#{id}", (err, res)->
+                app.items.findOne { _id: app.ObjectId(id) }, (e, r)->
+                    assert.equal r.body, "something"
                     done()
 
-        describe "GET /x/:id", ->
-            it "returns 404 if id not found", (done)->
-                r.get("/x/562075c6850ddb4a24c9b005")
-                    .set('Content-Type', 'application/json')
-                    .expect(404, done)
+expiration = ->
+    describe 'Expiration in the future', ->
 
-            it "returns 200 if id is found", (done)->
-                r.get("/x/#{result.id}")
-                    .set('Content-Type', 'application/json')
-                    .expect(200, done)
+        id = null
+        exp = moment().add(1, 'days')
 
-            it "returns the json stored", (done)->
-                r.get("/x/#{result.id}")
-                    .set('Content-Type', 'application/json')
-                    .end (err, res)->
-                        assert.equal(res.body.body, "something")
-                        assert.ok(res.body.expiration, "expiration")
-                        done()
+        before (done)->
+            post { body: "something", "expiration": exp.toDate() }, (err, res)->
+                id = res.body.id
+                done()
 
-            it "save proper data in the DB", (done)->
-                r.get("/x/#{result.id}")
-                    .set('Content-Type', 'application/json')
-                    .end (err, res)->
-                        app.items.findOne { _id: app.ObjectId(result.id) }, (e, r)->
-                            assert.equal(r.body, "something")
-                            done()
+        it 'returns 200', (done)->
+            get "/x/#{id}", (err, res)->
+                assert.equal res.status, 200
+                done()
+
+        it "returns the json stored", (done)->
+            get "/x/#{id}", (err, res)->
+                assert.equal moment(res.body.expiration).format(), exp.format()
+                done()
+
+    describe 'Expiration in the past', ->
+
+        id = null
+        exp = moment().subtract(1, 'days')
+
+        before (done)->
+            post { body: "something", expiration: exp.toDate() }, (err, res)->
+                id = res.body.id
+                done()
+
+        it 'returns 410', (done)->
+            get "/x/#{id}", (err, res)->
+                assert.equal res.status, 410
+                done()
+
+        it 'returns nothing', (done)->
+            get "/x/#{id}", (err, res)->
+                assert.deepEqual res.body, {}
+                done()
 
 #########################################################
 
@@ -102,8 +146,9 @@ describe 'Bootstrap', ->
             app.items.remove({})
 
             # Tests
-            missing_route()
-            add_item()
-            retrieve_items()
+            missingRoute()
+            addItem()
+            retrieveItems()
+            expiration()
 
             done()

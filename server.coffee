@@ -96,7 +96,7 @@ app.get '/x/:id', (req, res)->
             if result.expiration
                 expiration = new Date(result.expiration)
                 if expiration < new Date()
-                    res.statusCode 410
+                    res.statusCode = 410
                     res.send "Expired"
                     return
 
