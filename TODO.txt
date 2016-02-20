@@ -1,2 +1,3 @@
 * Needs tests for expiration. Expiration == null and expiration == past and expiration == future
 * Rework this in Typescript
+* Record the client IP address (to block abuse)
