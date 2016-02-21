@@ -132,7 +132,7 @@ app.post '/x', (req, res)->
         return err400 "message too long"
 
     # IP Address
-    payload.ip = req.ip
+    payload.ip = req.header('x-real-ip')
 
     # Creation date
     payload.createdDate = new Date()
