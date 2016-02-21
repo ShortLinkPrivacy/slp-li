@@ -94,14 +94,29 @@ retrieveItems = ->
                     assert.equal r.body, "something"
                     done()
 
-expiration = ->
+#########################################################
+
+payloadTooLarge = ->
+    describe "Large payload", ->
+
+        largeMessage = ""
+        for i in [0 .. 10001]
+            largeMessage += "x"
+
+        it "doesn't get saved",  (done)->
+            post { body: largeMessage }, (err, res)->
+                assert.equal res.status, 400
+                done()
+
+#########################################################
+
+timeToLive = ->
     describe 'Expiration in the future', ->
 
         id = null
-        exp = moment().add(1, 'days')
 
         before (done)->
-            post { body: "something", "expiration": exp.toDate() }, (err, res)->
+            post { body: "something", timeToLive: 3600000 }, (err, res)->
                 id = res.body.id
                 done()
 
@@ -110,18 +125,17 @@ expiration = ->
                 assert.equal res.status, 200
                 done()
 
-        it "returns the json stored", (done)->
+        it "returns the correct id", (done)->
             get "/x/#{id}", (err, res)->
-                assert.equal moment(res.body.expiration).format(), exp.format()
+                assert.equal id, res.body._id
                 done()
 
     describe 'Expiration in the past', ->
 
         id = null
-        exp = moment().subtract(1, 'days')
 
         before (done)->
-            post { body: "something", expiration: exp.toDate() }, (err, res)->
+            post { body: "something", timeToLive: -1 }, (err, res)->
                 id = res.body.id
                 done()
 
@@ -149,6 +163,7 @@ describe 'Bootstrap', ->
             missingRoute()
             addItem()
             retrieveItems()
-            expiration()
+            timeToLive()
+            payloadTooLarge()
 
             done()

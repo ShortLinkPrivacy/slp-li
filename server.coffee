@@ -50,7 +50,7 @@ view = (data)->
         <style type="text/css">
             body { font-family: sans-serif; background-color: #fff; }
             #content { width: 500px; margin-left: auto; margin-right: auto; }
-            .slp {} 
+            .slp {}
             .slp a { color: #00f; font-weight: bold; }
             pre { background-color: #eee; padding: 10px; border: 1px dotted #aaa; }
         </style>
@@ -67,7 +67,7 @@ view = (data)->
             </pre>
             <small class="footer">
                 <a href="https://en.wikipedia.org/wiki/Pretty_Good_Privacy">What is PGP?</a> |
-                <a href="">What is SLP?</a> 
+                <a href="">What is SLP?</a>
             </small>
         </div>
       </body>
@@ -93,9 +93,11 @@ app.get '/x/:id', (req, res)->
             logger.error "findOne(#{id}) returned error: #{err}"
             res.sendStatus 500
         else if result?
-            if result.expiration
-                expiration = new Date(result.expiration)
-                if expiration < new Date()
+
+            if result.timeToLive
+                now = new Date()
+                createdDate = result.createdDate
+                if createdDate.getTime() + result.timeToLive < now.getTime()
                     res.statusCode = 410
                     res.send "Expired"
                     return
@@ -120,15 +122,22 @@ app.post '/x', (req, res)->
         res.json { error: msg }
 
     if not payload?
-        return err400 "Payload missing"
+        return err400 "payload missing"
 
     unless payload.body?
         return err400 "body not defined"
 
-    # TODO: find a way to limit POSTs to internal data only, so
-    # idiots don't begin using this service as a free anonymous
-    # key-value items
+    # Limit the size of messages, so fools don't use this as a key value store
+    if payload.body.length > 10000
+        return err400 "message too long"
 
+    # IP Address
+    payload.ip = req.ip
+
+    # Creation date
+    payload.createdDate = new Date()
+
+    # Save
     app.items.insertOne payload, (err, result)->
         if err?
             logger.error "insertOne (#{payload}) resulted in error: #{err}"
