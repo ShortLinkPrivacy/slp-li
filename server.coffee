@@ -97,7 +97,7 @@ app.get '/x/:id', (req, res)->
             if result.timeToLive
                 now = new Date()
                 createdDate = result.createdDate
-                if createdDate.getTime() + result.timeToLive < now.getTime()
+                if createdDate.getTime() + result.timeToLive * 1000 < now.getTime()
                     res.statusCode = 410
                     res.send "Expired"
                     return
