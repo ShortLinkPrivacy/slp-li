@@ -22,14 +22,21 @@ type Item struct {
 	ExtVersion  string        `bson:"extVersion" json:"-"`
 }
 
+type Success struct {
+	Success bool        `json:"success"`
+	Error   string      `json:"error"`
+	Value   interface{} `json:"value"`
+}
+
 func main() {
 	session, err := mgo.Dial("localhost")
+	defer session.Close()
 	if err != nil {
 		log.Fatalf("Error connecting: %v", err)
 	}
 	items = session.DB("pgp").C("items")
 
-	r := gin.Default()
+	r := gin.New()
 	r.POST("/x", postItem)
 	r.GET("/x/:id", getItem)
 	r.Run(":5000")
@@ -79,7 +86,8 @@ func postItem(c *gin.Context) {
 
 	if err := c.BindJSON(&item); err == nil {
 		if err = items.Insert(&item); err == nil {
-			c.JSON(201, gin.H{"success": true, "value": item})
+			result := Success{true, "", item}
+			c.JSON(201, result)
 		} else {
 			c.String(500, "Server Error")
 		}
@@ -101,13 +109,21 @@ func getItem(c *gin.Context) {
 	oid := bson.ObjectIdHex(id)
 	err := items.FindId(oid).One(&item)
 
+	// Not found
 	if err != nil {
 		c.String(404, "Not found")
 		return
 	}
 
+	// Expired
+	if item.CreatedDate.Second()+item.TimeToLive > time.Now().Second() {
+		c.String(401, "Gone")
+		return
+	}
+
 	if c.Request.Header.Get("Content-Type") == "application/json" {
-		c.JSON(200, item)
+		result := Success{true, "", item}
+		c.JSON(200, &result)
 	} else {
 		c.Header("Content-Type", "text/html")
 		c.String(200, view(item))
