@@ -52,7 +52,7 @@ view = (data)->
             #content { width: 500px; margin-left: auto; margin-right: auto; }
             .slp {}
             .slp a { color: #00f; font-weight: bold; }
-            pre { background-color: #eee; padding: 10px; border: 1px dotted #aaa; }
+            pre { background-color: #eee; padding: 10px; border: 1px dotted #aaa; overflow-y: auto; }
         </style>
       </head>
       <body>
