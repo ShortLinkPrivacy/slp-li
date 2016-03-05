@@ -104,7 +104,11 @@ app.get '/x/:id', (req, res)->
 
             if req.get('Content-Type') is "application/json"
                 res.statusCode = 200
-                res.json result
+                res.json
+                    body: result.body
+                    timeToLive: result.timeToLive
+                    createdDate: result.createdDate
+                    _id: result._id
             else
                 res.statusCode = 200
                 res.send view(result)
