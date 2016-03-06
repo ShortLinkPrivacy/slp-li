@@ -107,7 +107,7 @@ app.get '/x/:id', (req, res)->
                 res.json
                     body: result.body
                     timeToLive: result.timeToLive
-                    createdDate: result.createdDate.toUTCString()
+                    createdDate: result.createdDate
                     _id: result._id
             else
                 res.statusCode = 200
