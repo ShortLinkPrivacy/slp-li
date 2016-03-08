@@ -108,6 +108,7 @@ app.get '/x/:id', (req, res)->
                     body: result.body
                     timeToLive: result.timeToLive
                     createdDate: result.createdDate
+                    fingerprints: result.fingerprints
                     _id: result._id
             else
                 res.statusCode = 200
