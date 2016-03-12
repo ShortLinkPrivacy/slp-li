@@ -52,7 +52,7 @@ view = (data)->
             #content { width: 500px; margin-left: auto; margin-right: auto; }
             .slp {}
             .slp a { color: #00f; font-weight: bold; }
-            pre { background-color: #eee; padding: 10px; border: 1px dotted #aaa; }
+            pre { background-color: #eee; padding: 10px; border: 1px dotted #aaa; overflow-y: auto; }
         </style>
         <script>
           (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
@@ -118,6 +118,7 @@ app.get '/x/:id', (req, res)->
                     body: result.body
                     timeToLive: result.timeToLive
                     createdDate: result.createdDate
+                    fingerprints: result.fingerprints
                     _id: result._id
             else
                 res.statusCode = 200
