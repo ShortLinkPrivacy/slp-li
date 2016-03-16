@@ -69,15 +69,15 @@ view = (data)->
         <div id="content">
             <h1>PGP Encrypted Message</h1>
             <p class="slp">
-                Please install the <a href="">Short Link Privacy</a> browser
-                plugin to have this message seamlessly decrypt in your browser.
+                Please install the <a href="https://chrome.google.com/webstore/detail/short-link-privacy/kkhoekeemmabphdemkfakkjjmpfkjocm">Short Link Privacy</a> browser
+                plugin to have this message decrypt in your browser.
             </p>
             <pre>
     """ + data.body + """
             </pre>
             <small class="footer">
                 <a href="https://en.wikipedia.org/wiki/Pretty_Good_Privacy">What is PGP?</a> |
-                <a href="">What is SLP?</a>
+                <a href="https://chrome.google.com/webstore/detail/short-link-privacy/kkhoekeemmabphdemkfakkjjmpfkjocm">What is SLP?</a>
             </small>
         </div>
       </body>
