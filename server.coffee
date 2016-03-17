@@ -69,7 +69,7 @@ view = (data)->
             </pre>
             <small class="footer">
                 <a href="https://en.wikipedia.org/wiki/Pretty_Good_Privacy">What is PGP?</a> |
-                <a href="https://chrome.google.com/webstore/detail/short-link-privacy/kkhoekeemmabphdemkfakkjjmpfkjocm">What is SLP?</a>
+                <a href="/">What is SLP?</a>
             </small>
         </div>
         <script>
