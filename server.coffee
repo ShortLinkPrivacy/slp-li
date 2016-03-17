@@ -53,7 +53,7 @@ view = (data)->
             .slp {}
             .slp a { color: #00f; font-weight: bold; }
             pre { background-color: #eee; padding: 10px; border: 1px dotted #aaa; overflow-y: auto; }
-            #decrypt { display: block; }
+            #decrypt { display: block; text-decoration: none; border-bottom: 1px dotted blue; font-size: .8em; }
         </style>
       </head>
       <body>
@@ -63,9 +63,7 @@ view = (data)->
                 Please install the <a href="https://chrome.google.com/webstore/detail/short-link-privacy/kkhoekeemmabphdemkfakkjjmpfkjocm">Short Link Privacy</a> browser
                 plugin to have this message decrypt in your browser.
             </p>
-            <div>
-                <a id="decrypt" href="#">decrypt</a>
-            </div>
+            <div> <a id="decrypt" href="#">decrypt here</a> </div>
             <pre id="msg">
     """ + data.body + """
             </pre>
