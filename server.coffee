@@ -53,7 +53,7 @@ view = (data)->
             .slp {}
             .slp a { color: #00f; font-weight: bold; }
             pre { background-color: #eee; padding: 10px; border: 1px dotted #aaa; overflow-y: auto; }
-            #decrypt { display: block; text-decoration: none; border-bottom: 1px dotted blue; font-size: .8em; }
+            #decrypt { text-decoration: none; border-bottom: 1px dotted blue; font-size: .8em; }
         </style>
       </head>
       <body>
