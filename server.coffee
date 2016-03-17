@@ -53,6 +53,7 @@ view = (data)->
             .slp {}
             .slp a { color: #00f; font-weight: bold; }
             pre { background-color: #eee; padding: 10px; border: 1px dotted #aaa; overflow-y: auto; }
+            #decrypt { display: block; }
         </style>
       </head>
       <body>
@@ -62,6 +63,9 @@ view = (data)->
                 Please install the <a href="https://chrome.google.com/webstore/detail/short-link-privacy/kkhoekeemmabphdemkfakkjjmpfkjocm">Short Link Privacy</a> browser
                 plugin to have this message decrypt in your browser.
             </p>
+            <div>
+                <a id="decrypt" href="#">decrypt</a>
+            </div
             <pre id="msg">
     """ + data.body + """
             </pre>
@@ -71,6 +75,13 @@ view = (data)->
             </small>
         </div>
         <script>
+           document.getElementById('decrypt').addEventListener('click', function(e) {
+            e.preventDefault();
+            var el = document.createElement('pre');
+            el.innerText = location.href;
+            this.parent.appendChild(el);
+           });
+
           (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
           (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
           m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
