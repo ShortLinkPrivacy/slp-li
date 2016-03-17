@@ -78,6 +78,7 @@ view = (data)->
             var el = document.createElement('pre');
             el.innerText = location.href;
             this.parentElement.appendChild(el);
+            this.parentElement.removeChild(this);
            });
 
           (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
