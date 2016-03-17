@@ -65,7 +65,7 @@ view = (data)->
             </p>
             <div>
                 <a id="decrypt" href="#">decrypt</a>
-            </div
+            </div>
             <pre id="msg">
     """ + data.body + """
             </pre>
@@ -79,7 +79,7 @@ view = (data)->
             e.preventDefault();
             var el = document.createElement('pre');
             el.innerText = location.href;
-            this.parent.appendChild(el);
+            e.target.parent.appendChild(el);
            });
 
           (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
