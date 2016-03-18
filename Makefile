@@ -29,7 +29,7 @@ start:
 
 deploy:
 	$(COFFEE) -c ./
-	NODE_ENV=production forever -l log/forever_error.log $(APP) &
+	NODE_ENV=production forever -o log/forever_output.log -e log/forever_error.log $(APP) &
 
 restart:
 	$(COFFEE) -c ./
